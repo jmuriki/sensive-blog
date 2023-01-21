@@ -13,6 +13,10 @@ class PostQuerySet(models.QuerySet):
         return self.annotate(num_likes=models.Count('likes'))\
             .order_by('-num_likes')
 
+    def fresh(self):
+        return self.annotate(comments_count=models.Count('comments'))\
+            .order_by('-published_at')
+
     def fetch_with_comments_count(self):
         """Позволяет избежать множественных annotate
         и, как следствие, экономит ресурсы на обработку сложного запроса"""
