@@ -7,14 +7,15 @@ class PostQuerySet(models.QuerySet):
 
     def year(self, year):
         return self.filter(published_at__year=year)\
-        .order_by('published_at')
+            .order_by('published_at')
 
     def popular(self):
         return self.annotate(num_likes=models.Count('likes'))\
-        .order_by('-num_likes')
+            .order_by('-num_likes')
 
     def fetch_with_comments_count(self):
-        """Позволяет избежать множественных annotate и, как следствие, экономит ресурсы на обработку сложного запроса"""
+        """Позволяет избежать множественных annotate
+        и, как следствие, экономит ресурсы на обработку сложного запроса"""
         most_popular_posts_ids = [post.id for post in self]
         posts_with_comments = Post.objects\
             .filter(id__in=most_popular_posts_ids)\
@@ -67,7 +68,7 @@ class TagQuerySet(models.QuerySet):
 
     def popular(self):
         return self.annotate(num_related_posts=models.Count('posts'))\
-        .order_by('-num_related_posts')
+            .order_by('-num_related_posts')
 
 
 class Tag(models.Model):
