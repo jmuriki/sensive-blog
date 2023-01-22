@@ -13,7 +13,7 @@ def serialize_post(post):
         'published_at': post.published_at,
         'slug': post.slug,
         'tags': [serialize_tag(tag) for tag in post.tags.popular()],
-        'first_tag_title': post.tags.all()[0].title,
+        'first_tag_title': post.tags.first().title,
     }
 
 
@@ -49,7 +49,7 @@ def index(request):
 
 def post_detail(request, slug):
     post = Post.objects.popular().get(slug=slug)
-    comments = Comment.objects.filter(post=post).prefetch_related('author')
+    comments = Comment.objects.filter(post=post).select_related('author')
     serialized_comments = [
         {
             'text': comment.text,
@@ -75,7 +75,7 @@ def post_detail(request, slug):
     most_popular_tags = Tag.objects.popular()[:5]
 
     most_popular_posts = Post.objects.popular()\
-        .prefetch_related('author')[:5].fetch_with_comments_count()
+        .prefetch_related('author', 'tags')[:5].fetch_with_comments_count()
 
     context = {
         'post': serialized_post,
